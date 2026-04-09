@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Job Intelligence — Varun Nallari</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg:        #0D0D0D;
+    --bg2:       #141414;
+    --bg3:       #1A1A1A;
+    --border:    rgba(240,237,228,0.1);
+    --border2:   rgba(240,237,228,0.18);
+    --cream:     #F0EDE4;
+    --cream2:    rgba(240,237,228,0.7);
+    --cream3:    rgba(240,237,228,0.35);
+    --gold:      #B8962E;
+    --gold2:     #D4A832;
+    --gold-bg:   rgba(184,150,46,0.12);
+    --gold-bg2:  rgba(184,150,46,0.22);
+    --red:       #C0392B;
+    --red-bg:    rgba(192,57,43,0.12);
+    --green:     #27AE60;
+    --green-bg:  rgba(39,174,96,0.12);
+    --blue:      #2980B9;
+    --blue-bg:   rgba(41,128,185,0.12);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--cream);
+    min-height: 100vh;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* NAV */
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2.5rem;
+    height: 56px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 100;
+  }
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--cream);
+    letter-spacing: 0.02em;
+    text-decoration: none;
+  }
+  .nav-logo span { color: var(--gold); }
+  .nav-center {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--cream3);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .nav-right { display: flex; align-items: center; gap: 1.5rem; }
+  .nav-link {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--cream3);
+    text-decoration: none;
+    letter-spacing: 0.06em;
+    transition: color 0.2s;
+  }
+  .nav-link:hover { color: var(--gold); }
+  .pulse {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--green);
+    display: inline-block;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity:1; transform:scale(1); }
+    50% { opacity:0.5; transform:scale(0.85); }
+  }
+
+  /* HERO */
+  .hero {
+    padding: 3rem 2.5rem 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--gold);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 800;
+    color: var(--cream);
+    line-height: 1.05;
+    margin-bottom: 0.6rem;
+  }
+  .hero h1 em {
+    font-style: italic;
+    color: var(--gold);
+  }
+  .hero-sub {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--cream3);
+    letter-spacing: 0.04em;
+    margin-bottom: 2rem;
+  }
+
+  /* STATS ROW */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 0;
+  }
+  .stat {
+    padding: 1.2rem 1.5rem;
+    border-right: 1px solid var(--border);
+  }
+  .stat:last-child { border-right: none; }
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1;
+    margin-bottom: 0.3rem;
+  }
+  .stat-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--cream3);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* MAIN LAYOUT */
+  .main {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    min-height: calc(100vh - 56px - 180px);
+  }
+
+  /* JOB FEED */
+  .feed-col {
+    border-right: 1px solid var(--border);
+  }
+  .col-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .col-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--cream3);
+  }
+  .filter-row {
+    display: flex;
+    gap: 6px;
+    padding: 0.75rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .chip {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    padding: 4px 10px;
+    border: 1px solid var(--border2);
+    border-radius: 2px;
+    color: var(--cream3);
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .chip:hover { border-color: var(--gold); color: var(--gold); }
+  .chip.active { border-color: var(--gold); color: var(--gold); background: var(--gold-bg); }
+
+  /* JOB ROW */
+  .job-row {
+    display: grid;
+    grid-template-columns: 3fr 1fr 80px 90px;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.15s;
+    gap: 1rem;
+  }
+  .job-row:hover { background: var(--bg2); }
+  .job-row.active { background: var(--bg3); border-left: 2px solid var(--gold); padding-left: calc(1.5rem - 2px); }
+  .job-title-text {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--cream);
+    margin-bottom: 3px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .new-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    background: var(--gold-bg2);
+    color: var(--gold2);
+    padding: 1px 6px;
+    border-radius: 2px;
+    text-transform: uppercase;
+  }
+  .job-company {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--cream3);
+  }
+  .source-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--cream3);
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    padding: 3px 8px;
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+  .match-wrap { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+  .match-pct {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .match-bar-bg {
+    width: 60px; height: 3px;
+    background: var(--bg3);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .match-bar-fill { height: 100%; border-radius: 2px; }
+  .m-high { color: var(--gold2); }
+  .m-high .match-bar-fill { background: var(--gold2); }
+  .m-mid  { color: #E8A020; }
+  .m-mid  .match-bar-fill { background: #E8A020; }
+  .m-low  { color: var(--cream3); }
+  .m-low  .match-bar-fill { background: var(--cream3); }
+  .posted-text {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--cream3);
+    text-align: right;
+  }
+
+  /* TABLE HEADER */
+  .table-header {
+    display: grid;
+    grid-template-columns: 3fr 1fr 80px 90px;
+    padding: 0.5rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    gap: 1rem;
+    background: var(--bg2);
+  }
+  .th {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--cream3);
+  }
+  .th:last-child, .th:nth-child(3) { text-align: right; }
+
+  /* DETAIL PANEL */
+  .detail-col { background: var(--bg2); }
+  .detail-inner { padding: 1.5rem; }
+  .detail-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 300px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--cream3);
+    letter-spacing: 0.06em;
+  }
+  .detail-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--cream);
+    margin-bottom: 4px;
+    line-height: 1.2;
+  }
+  .detail-company {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--gold);
+    margin-bottom: 1rem;
+  }
+  .detail-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1rem; }
+  .detail-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--cream3);
+    border: 1px solid var(--border2);
+    padding: 3px 8px;
+    border-radius: 2px;
+  }
+  .section-heading {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.5rem;
+    margin-top: 1.2rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .detail-desc {
+    font-size: 12px;
+    color: var(--cream2);
+    line-height: 1.7;
+    margin-bottom: 1rem;
+  }
+  .skills-row { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 1rem; }
+  .skill-pill {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--cream2);
+    padding: 3px 8px;
+    border-radius: 2px;
+  }
+
+  /* COVER LETTER */
+  .cl-box {
+    border: 1px solid var(--border2);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 0.5rem;
+  }
+  .cl-header {
+    background: var(--bg3);
+    padding: 6px 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: var(--cream3);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .cl-body {
+    padding: 12px;
+    font-size: 12px;
+    color: var(--cream2);
+    line-height: 1.75;
+    max-height: 220px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+  }
+  .cl-loading {
+    padding: 20px 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--cream3);
+    font-style: italic;
+    text-align: center;
+  }
+
+  /* BUTTONS */
+  .btn-row { display: flex; gap: 8px; margin-top: 1rem; flex-wrap: wrap; }
+  .btn {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    padding: 8px 16px;
+    border: 1px solid var(--border2);
+    background: transparent;
+    color: var(--cream2);
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.15s;
+  }
+  .btn:hover { border-color: var(--gold); color: var(--gold); background: var(--gold-bg); }
+  .btn-gold {
+    background: var(--gold);
+    color: #0D0D0D;
+    border-color: var(--gold);
+    font-weight: 500;
+  }
+  .btn-gold:hover { background: var(--gold2); border-color: var(--gold2); color: #0D0D0D; }
+
+  /* TRACKER */
+  .tracker-col {
+    grid-column: 1 / -1;
+    border-top: 1px solid var(--border);
+    padding: 1.5rem 2.5rem;
+  }
+  .tracker-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.2rem;
+  }
+  .tracker-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--cream);
+  }
+  .pipeline {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .pipe-col { }
+  .pipe-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--cream3);
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .pipe-dot { width: 6px; height: 6px; border-radius: 50%; }
+  .dot-applied   { background: var(--blue); }
+  .dot-interview { background: var(--green); }
+  .dot-pending   { background: var(--gold); }
+  .dot-rejected  { background: var(--red); }
+  .pipe-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+  }
+  .pipe-card-title { font-size: 12px; font-weight: 500; color: var(--cream); margin-bottom: 2px; }
+  .pipe-card-co {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--cream3);
+  }
+  .pipe-card-date {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    color: var(--cream3);
+    margin-top: 6px;
+  }
+  .add-btn {
+    width: 100%;
+    padding: 7px;
+    border: 1px dashed var(--border2);
+    background: transparent;
+    color: var(--cream3);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.15s;
+    letter-spacing: 0.06em;
+  }
+  .add-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 1.2rem 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .footer-left {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--cream3);
+    letter-spacing: 0.06em;
+  }
+  .footer-left a { color: var(--gold); text-decoration: none; }
+  .footer-right {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--cream3);
+    letter-spacing: 0.06em;
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+  @media (max-width: 900px) {
+    .main { grid-template-columns: 1fr; }
+    .feed-col { border-right: none; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .pipeline { grid-template-columns: repeat(2, 1fr); }
+    .job-row { grid-template-columns: 1fr 80px; }
+    .job-row > :nth-child(2), .table-header > :nth-child(2) { display: none; }
+    .posted-text { display: none; }
+    .table-header { grid-template-columns: 1fr 80px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="https://iamvsn31.github.io" target="_blank">VSN <span>·</span></a>
+  <span class="nav-center">Job Intelligence Agent</span>
+  <div class="nav-right">
+    <span class="pulse"></span>
+    <span class="nav-link" id="last-sync">Synced just now</span>
+    <a class="nav-link" href="https://iamvsn31.github.io" target="_blank">← Portfolio</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-label">BA/PM · Entry Level · United States · 2026</div>
+  <h1>The <em>Analyst's</em><br>Command Center</h1>
+  <div class="hero-sub">Business Analyst · PSM II Scrum Master · Product Strategist</div>
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-num" id="s-new">14</div>
+      <div class="stat-label">New today</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" id="s-match">6</div>
+      <div class="stat-label">High match ≥80%</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" id="s-applied">3</div>
+      <div class="stat-label">Applied this week</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" id="s-interview">1</div>
+      <div class="stat-label">Interview stage</div>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <!-- JOB FEED -->
+  <div class="feed-col">
+    <div class="col-header">
+      <span class="col-title">Live job feed</span>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <input id="search-input" type="text" placeholder="Search roles, companies…"
+          style="font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--bg3);border:1px solid var(--border2);color:var(--cream);padding:5px 10px;border-radius:2px;outline:none;width:200px;"
+          oninput="filterJobs()"/>
+      </div>
+    </div>
+    <div class="filter-row">
+      <button class="chip active" onclick="setSource('all',this)">All</button>
+      <button class="chip" onclick="setSource('LinkedIn',this)">LinkedIn</button>
+      <button class="chip" onclick="setSource('Indeed',this)">Indeed</button>
+      <button class="chip" onclick="setSource('Wellfound',this)">Wellfound</button>
+      <button class="chip" onclick="setSource('WayUp',this)">WayUp</button>
+      <button class="chip" onclick="setSource('Built In',this)">Built In</button>
+      <button class="chip" onclick="setSource('Dice',this)">Dice</button>
+    </div>
+    <div class="table-header">
+      <span class="th">Role / Company</span>
+      <span class="th">Source</span>
+      <span class="th" style="text-align:right">Match</span>
+      <span class="th" style="text-align:right">Posted</span>
+    </div>
+    <div id="job-list"></div>
+  </div>
+
+  <!-- DETAIL PANEL -->
+  <div class="detail-col">
+    <div class="col-header">
+      <span class="col-title">Role details</span>
+    </div>
+    <div id="detail-panel">
+      <div class="detail-empty">— Select a role</div>
+    </div>
+  </div>
+</div>
+
+<!-- TRACKER -->
+<div class="tracker-col">
+  <div class="tracker-header">
+    <span class="tracker-title">Application Pipeline</span>
+    <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--cream3);">Track your applications across stages</span>
+  </div>
+  <div class="pipeline">
+    <div class="pipe-col">
+      <div class="pipe-label"><span class="pipe-dot dot-applied"></span>Applied</div>
+      <div class="pipe-card">
+        <div class="pipe-card-title">Jr. BA — Deloitte 328691</div>
+        <div class="pipe-card-co">Deloitte · LinkedIn</div>
+        <div class="pipe-card-date">Applied Apr 3</div>
+      </div>
+      <div class="pipe-card">
+        <div class="pipe-card-title">Associate Analyst</div>
+        <div class="pipe-card-co">BCG · Indeed</div>
+        <div class="pipe-card-date">Applied Apr 1</div>
+      </div>
+      <button class="add-btn" onclick="addToTracker('Applied')">+ Add</button>
+    </div>
+    <div class="pipe-col">
+      <div class="pipe-label"><span class="pipe-dot dot-interview"></span>Interview</div>
+      <div class="pipe-card">
+        <div class="pipe-card-title">Business Analyst</div>
+        <div class="pipe-card-co">ATC · Referral</div>
+        <div class="pipe-card-date">Interview Apr 10</div>
+      </div>
+      <button class="add-btn" onclick="addToTracker('Interview')">+ Add</button>
+    </div>
+    <div class="pipe-col">
+      <div class="pipe-label"><span class="pipe-dot dot-pending"></span>Pending</div>
+      <button class="add-btn" onclick="addToTracker('Pending')">+ Add</button>
+    </div>
+    <div class="pipe-col">
+      <div class="pipe-label"><span class="pipe-dot dot-rejected"></span>Closed</div>
+      <button class="add-btn" onclick="addToTracker('Closed')">+ Add</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-left">
+    Built by <a href="https://iamvsn31.github.io" target="_blank">Varun Nallari</a> ·
+    Powered by Claude API · Dice MCP · JSearch
+  </div>
+  <div class="footer-right">BU Questrom MIM · PSM II · BA @ ATC</div>
+</footer>
+
+<script>
+const JOBS = [
+  {id:1,title:"Business Analyst",company:"Deloitte",source:"LinkedIn",location:"New York, NY",type:"Full-time",match:92,posted:"2h ago",isNew:true,salary:"$70–85k",desc:"Work with cross-functional teams to gather requirements, build process maps, and deliver data-driven insights for Fortune 500 clients. Strong SQL and PowerPoint skills required. You will own sprint ceremonies and deliver weekly stakeholder reports.",skills:["SQL","JIRA","Agile","PowerPoint","Requirements Gathering"]},
+  {id:2,title:"Product Analyst",company:"Figma",source:"Wellfound",location:"Remote",type:"Full-time",match:88,posted:"5h ago",isNew:true,salary:"$75–90k",desc:"Analyze product metrics, run A/B tests, and partner with PMs to shape the roadmap. You'll be embedded in a product squad and own your own north-star metric. Strong Python or SQL required.",skills:["Python","Mixpanel","SQL","A/B Testing","Product Analytics"]},
+  {id:3,title:"Junior Business Analyst",company:"American Express",source:"Indeed",location:"Phoenix, AZ",type:"Full-time",match:85,posted:"1d ago",isNew:false,salary:"$65–78k",desc:"Support the digital transformation team with data analysis, stakeholder reporting, and sprint ceremonies. JIRA and Confluence experience preferred. Excel modeling required.",skills:["Excel","Confluence","JIRA","Data Analysis","Reporting"]},
+  {id:4,title:"Associate Product Manager",company:"HubSpot",source:"Built In",location:"Remote",type:"Full-time",match:80,posted:"1d ago",isNew:false,salary:"$80–95k",desc:"Entry-level APM role within HubSpot's CRM product line. Write PRDs, work with engineering, and help prioritize the backlog. Figma and analytics tool experience a plus.",skills:["PRD Writing","Figma","Analytics","Roadmapping","Agile"]},
+  {id:5,title:"Operations Analyst",company:"McKinsey",source:"LinkedIn",location:"Chicago, IL",type:"Full-time",match:76,posted:"2d ago",isNew:false,salary:"$85–100k",desc:"Analyst role within the Operations practice. Heavy Excel modeling, client presentations, and hypothesis-driven problem solving on complex business challenges.",skills:["Excel","PowerPoint","Python","Problem Solving","Client Presentations"]},
+  {id:6,title:"Data Analyst — Entry Level",company:"Stripe",source:"WayUp",location:"Remote",type:"Full-time",match:72,posted:"3d ago",isNew:false,salary:"$72–88k",desc:"Analyze transaction data, build dashboards in Looker, and support product decisions across Stripe's payments infrastructure. SQL proficiency required.",skills:["SQL","Looker","Python","Dashboard Design","Data Modeling"]},
+  {id:7,title:"Business Systems Analyst",company:"Salesforce",source:"Built In",location:"San Francisco, CA",type:"Full-time",match:68,posted:"3d ago",isNew:false,salary:"$75–90k",desc:"Partner with IT and business stakeholders to document requirements and implement Salesforce CRM workflows. Agile delivery, strong communication skills needed.",skills:["Salesforce","SQL","Agile","Requirements","Process Mapping"]},
+  {id:8,title:"Associate BA — Fintech",company:"Robinhood",source:"Wellfound",location:"Menlo Park, CA",type:"Full-time",match:65,posted:"4d ago",isNew:false,salary:"$80–100k",desc:"Business analyst role on the retail investing product team. Own requirements gathering, write specs, and coordinate with engineering and design teams.",skills:["Requirements","Specs","Analytics","Stakeholder Mgmt","Agile"]},
+  {id:9,title:"Business Analyst — New Grad",company:"CGI Group",source:"Dice",location:"Phoenix, AZ",type:"Full-time",match:84,posted:"6h ago",isNew:true,salary:"$60–75k",desc:"Entry-level BA role supporting federal and commercial clients. Requirements gathering, process documentation, and Agile sprint participation. 0-2 years experience.",skills:["Requirements","Process Docs","Agile","JIRA","Communication"]},
+  {id:10,title:"Product Strategy Analyst",company:"Google",source:"LinkedIn",location:"Mountain View, CA",type:"Full-time",match:78,posted:"1d ago",isNew:false,salary:"$90–110k",desc:"Support product strategy initiatives through market analysis, competitive intelligence, and structured data analysis. MBA or equivalent preferred but not required.",skills:["Market Analysis","Excel","SQL","Strategy","Competitive Intel"]},
+];
+
+let selectedId = null;
+let activeSource = 'all';
+
+function matchClass(m) {
+  if (m >= 80) return 'm-high';
+  if (m >= 70) return 'm-mid';
+  return 'm-low';
+}
+
+function getFiltered() {
+  const q = (document.getElementById('search-input')?.value || '').toLowerCase();
+  return JOBS.filter(j => {
+    const srcOk = activeSource === 'all' || j.source === activeSource;
+    const qOk = !q || j.title.toLowerCase().includes(q) || j.company.toLowerCase().includes(q);
+    return srcOk && qOk;
+  });
+}
+
+function renderJobs() {
+  const list = document.getElementById('job-list');
+  const filtered = getFiltered();
+  if (!filtered.length) {
+    list.innerHTML = '<div style="padding:2rem;text-align:center;font-family:IBM Plex Mono,monospace;font-size:11px;color:var(--cream3);">No roles match.</div>';
+    return;
+  }
+  list.innerHTML = filtered.map(j => {
+    const mc = matchClass(j.match);
+    return `<div class="job-row${selectedId===j.id?' active':''}" onclick="selectJob(${j.id})">
+      <div>
+        <div class="job-title-text">${j.title}${j.isNew?'<span class="new-badge">New</span>':''}</div>
+        <div class="job-company">${j.company} · ${j.location}</div>
+      </div>
+      <div><span class="source-tag">${j.source}</span></div>
+      <div class="match-wrap">
+        <span class="match-pct ${mc}">${j.match}%</span>
+        <div class="match-bar-bg"><div class="match-bar-fill ${mc}" style="width:${j.match}%"></div></div>
+      </div>
+      <div class="posted-text">${j.posted}</div>
+    </div>`;
+  }).join('');
+}
+
+function selectJob(id) {
+  selectedId = id;
+  renderJobs();
+  const j = JOBS.find(x => x.id === id);
+  if (!j) return;
+  const mc = matchClass(j.match);
+  document.getElementById('detail-panel').innerHTML = `
+    <div class="detail-inner">
+      <div class="detail-title">${j.title}</div>
+      <div class="detail-company">${j.company} · ${j.location}</div>
+      <div class="detail-tags">
+        <span class="detail-tag">${j.source}</span>
+        <span class="detail-tag">${j.type}</span>
+        <span class="detail-tag">${j.salary || 'Salary N/A'}</span>
+        <span class="detail-tag match-pct ${mc}">${j.match}% match</span>
+      </div>
+      <div class="section-heading">About the role</div>
+      <div class="detail-desc">${j.desc}</div>
+      <div class="section-heading">Skills required</div>
+      <div class="skills-row">${j.skills.map(s=>`<span class="skill-pill">${s}</span>`).join('')}</div>
+      <div class="section-heading">AI cover letter</div>
+      <div class="cl-box">
+        <div class="cl-header">
+          <span>claude-sonnet · tailored to your profile</span>
+          <span id="cl-status">—</span>
+        </div>
+        <div id="cl-body" class="cl-loading">Click Generate to draft a cover letter using your profile.</div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-gold" onclick="generateCL(${j.id})">Generate cover letter</button>
+        <button class="btn" onclick="markApplied(${j.id})">Mark applied</button>
+        <button class="btn" onclick="window.open('https://www.google.com/search?q=${encodeURIComponent(j.company+' '+j.title+' interview')}')" >Research ↗</button>
+      </div>
+    </div>`;
+}
+
+async function generateCL(id) {
+  const j = JOBS.find(x => x.id === id);
+  if (!j) return;
+  document.getElementById('cl-body').className = 'cl-loading';
+  document.getElementById('cl-body').textContent = 'Generating with Claude…';
+  document.getElementById('cl-status').textContent = 'generating…';
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{
+          role: 'user',
+          content: `Write a concise, compelling cover letter (3 short paragraphs, under 200 words) for a 24-year-old MIM student at Boston University Questrom, applying for "${j.title}" at ${j.company} (${j.location}).
+Candidate background: PSM II certified, incoming BA at American Technology Consulting. Projects: Perfect Purifiers LLC (PM deliverable), By the River café simulation, Trajecto (career learning platform), TurnAround (foot-traffic/AR platform). Skills: ${j.skills.join(', ')}.
+Tone: Professional, direct, confident. No filler phrases. Address to "Hiring Team". Lead with a specific value statement. End with a clear call to action. Under 200 words.`
+        }]
+      })
+    });
+    const data = await resp.json();
+    const text = data.content?.map(c=>c.text||'').join('') || 'Could not generate. Check API connection.';
+    document.getElementById('cl-body').className = 'cl-body';
+    document.getElementById('cl-body').textContent = text;
+    document.getElementById('cl-status').textContent = 'ready';
+  } catch(e) {
+    document.getElementById('cl-body').className = 'cl-body';
+    document.getElementById('cl-body').textContent = 'API error: ' + e.message;
+    document.getElementById('cl-status').textContent = 'error';
+  }
+}
+
+function markApplied(id) {
+  const j = JOBS.find(x => x.id === id);
+  if (!j) return;
+  const today = new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  const col = document.querySelector('.pipe-col');
+  const card = document.createElement('div');
+  card.className = 'pipe-card';
+  card.innerHTML = `<div class="pipe-card-title">${j.title}</div><div class="pipe-card-co">${j.company} · ${j.source}</div><div class="pipe-card-date">Applied ${today}</div>`;
+  col.insertBefore(card, col.querySelector('.add-btn'));
+  const n = parseInt(document.getElementById('s-applied').textContent) + 1;
+  document.getElementById('s-applied').textContent = n;
+  alert(`Marked as applied: ${j.title} @ ${j.company}`);
+}
+
+function addToTracker(stage) {
+  const title = prompt(`Role title for "${stage}" stage:`);
+  if (!title) return;
+  const company = prompt('Company name:') || 'Unknown';
+  const cols = document.querySelectorAll('.pipe-col');
+  const idx = ['Applied','Interview','Pending','Closed'].indexOf(stage);
+  if (idx < 0) return;
+  const today = new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  const card = document.createElement('div');
+  card.className = 'pipe-card';
+  card.innerHTML = `<div class="pipe-card-title">${title}</div><div class="pipe-card-co">${company}</div><div class="pipe-card-date">${stage} ${today}</div>`;
+  cols[idx].insertBefore(card, cols[idx].querySelector('.add-btn'));
+}
+
+function setSource(src, btn) {
+  activeSource = src;
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  renderJobs();
+}
+
+function filterJobs() { renderJobs(); }
+
+// Last sync time
+function updateSync() {
+  const el = document.getElementById('last-sync');
+  if (el) el.textContent = 'Synced ' + new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+}
+
+renderJobs();
+updateSync();
+</script>
+</body>
+</html>
